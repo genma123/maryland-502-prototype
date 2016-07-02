@@ -1,0 +1,140 @@
+<div class = "row">
+  <div class="col-md-6">
+    <h2>
+      Maryland 502 Calculator
+    </h2>
+  </div>
+  <div class="col-md-3">
+  </div>
+  <!-- <div class="col-md-2">
+    <a style="margin-top:20px" class="btn btn-default" href="#/new/contact">New</a>
+  </div> -->
+  <div class="col-md-1">
+  </div>
+</div>
+<div class="container">
+	<h3>Calculate Your Maryland Income Tax</h3>
+	<form class="form-horizontal">
+	<div class="form-group">
+	  <label class="col-sm-4 control-label" for="filingStatus">Filing Status:</label>
+	  <div class="col-sm-6">
+	  <select class="form-control" ng-model="filingStatus" id="filingStatus"
+		          ng-options="filingStatus for filingStatus in filingStatuses"></select><br/>
+	  </div> 
+	</div>
+	<!-- <div class="form-group">
+	  <label class="col-sm-4 control-label" for="areYouADependent">Are you someone's dependent?:</label>
+	  <div class="col-sm-6">
+	  <select class="form-control" ng-model="areYouADependent" id="areYouADependent"
+		          ng-options="areYouADependent for areYouADependent in areYouADependentChoices"></select><br/>
+	  </div> 
+	</div> -->
+	<div class="form-group">
+	  <label class="col-sm-4 control-label">Your Exemptions:</label>
+	  <div class="col-sm-6">
+		<label class="checkbox-inline">
+		  <input type="checkbox" id="inlineCheckbox1" value="option1"> 65 or over
+		</label>
+		<label class="checkbox-inline">
+		  <input type="checkbox" id="inlineCheckbox2" value="option2"> Blind
+		</label>
+	  </div>
+	  </label>
+	</div>
+	<div class="form-group">
+	  <label class="col-sm-4 control-label">Dependents:</label>
+	  <div class="col-sm-6">
+		<label class="radio-inline">
+		  <input type="radio" name="inlineRadioOptions" id="inlineRadioButton1" value="option2"> No dependents
+		</label>
+		<label class="radio-inline">
+		  <input type="radio" name="inlineRadioOptions" id="inlineRadioButton2" value="option2"> One dependent
+		</label>
+		<label class="radio-inline">
+		  <input type="radio" name="inlineRadioOptions" id="inlineRadioButton3" value="option2"> Two dependents
+		</label>
+	  </div>
+	  </label>
+	</div>
+	<div class="form-group">
+	  <label class="col-sm-4 control-label">Spouse's Exemptions:</label>
+	  <div class="col-sm-6">
+		<label class="checkbox-inline">
+		  <input type="checkbox" id="inlineCheckbox3" value="option1"> 65 or over
+		</label>
+		<label class="checkbox-inline">
+		  <input type="checkbox" id="inlineCheckbox4" value="option2"> Blind
+		</label>
+	  </div>
+	  </label>
+	</div>
+	<div class="form-group">
+	  <label class="col-sm-4 control-label" for="subdivision">Subdivision:</label>
+	  <div class="col-sm-6">
+	  <select class="form-control" ng-model="subdivision" id="subdivision"
+		          ng-options="subdivision.locality for subdivision in subdivisionChoices"></select>&nbsp;Rate:{{subdivision.rate}}<br/>
+	  </div> 
+	</div>
+	<div class="form-group">
+	<label class="col-sm-4 control-label" for="adjustedGrossIncome">Adjusted gross Income from 1040EZ:</label>
+	  <div class="col-sm-4">
+		<div class="input-group">
+			<span class="input-group-addon">$</span>
+			<input class="form-control" type="text" ng-model="adjustedGrossIncome" ui-number-mask="2" id="adjustedGrossIncome" /><br/>
+		<!-- <currency-input-mask id="adjustedGrossIncome"
+                    ng-model="adjustedGrossIncome"
+                    ng-disabled="false"
+                    ng-trim="true"
+                    inline="true"/><br/>
+        <currency-input-mask id="adjustedGrossIncome"
+          colored-money-val="true"
+          ng-model="adjustedGrossIncome">
+        </currency-input-mask><br/> -->
+		</div>
+	  </div>
+	</div>
+	<div class="form-group">
+	<label class="col-sm-4 control-label" for="taxableInterest">Taxable interest:</label>
+	  <div class="col-sm-4">
+		<div class="input-group">
+			<span class="input-group-addon">$</span>
+			<input class="form-control" type="text" ng-model="taxableInterest" ui-number-mask="2" id="taxableInterest" /><br/>
+		</div>
+	  </div>
+	</div>
+	<div class="form-group">
+	<label class="col-sm-4 control-label" for="unemploymentCompensation">Unemployment compensation:</label>
+	  <div class="col-sm-4">
+		<div class="input-group">
+			<span class="input-group-addon">$</span>
+			<input class="form-control" type="text" ng-model="unemploymentCompensation" ui-number-mask="2" id="unemploymentCompensation" /><br/>
+		</div>
+	  </div>
+	</div>
+	<div class="form-group">
+	<label class="col-sm-4 control-label" for="stateTaxWithheld">State Tax Withheld:</label>
+	  <div class="col-sm-4">
+		<div class="input-group">
+			<span class="input-group-addon">$</span>
+			<input class="form-control" type="text" ng-model="stateTaxWithheld" ui-number-mask="2" id="stateTaxWithheld" /><br/>
+		</div>
+	  </div>
+	</div>
+	<div class="form-group">
+	   <!-- <div class="pull-left"> -->
+	   <div class="col-sm-offset-1 col-sm-6">
+		<input class="btn btn-default" type="button" value="Calculate" ng-click="calculate()" /><br/><br/>
+	Total Tax: {{totalTax}}
+		</div>
+	</div>
+	</form>
+  <!-- <table class="table table-hover">
+    <tbody>
+      <tr ng-repeat="contact in contacts | orderBy:'lastName'" style="cursor:pointer">
+        <td>
+          <a ng-href="#/contact/{{contact._id}}">{{ contact.firstName }} {{ contact.lastName }}</a>
+        </td>
+      </tr>
+    </tbody>
+  </table> -->
+</div>

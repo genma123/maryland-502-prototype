@@ -1,0 +1,35 @@
+{
+  "name": "maryland-502-calculator",
+  "description": "A MEAN app that allows users to calculate their Maryland Income Tax.",
+  "main": "server.js",
+  "authors": [
+    "John Emmerling"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "MEAN",
+    "Express",
+    "Angular"
+  ],
+  "homepage": "https://github.com/genma123/nodeJSlearning",
+  "moduleType": [],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "1",
+    "bootstrap": "^3.3.6",
+    "lodash": "^4.13.1",
+    "angular": "^1.5.6",
+    "angular-route": "^1.5.6",
+    "currency-input-mask": "angular-currency-input-mask#*",
+    "ngCurrencyMask": "ng-currency-mask#^1.0.61",
+    "angular-input-masks": "^2.3.0",
+    "angular-resource": "^1.5.7"
+  }
+}

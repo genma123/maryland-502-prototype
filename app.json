@@ -1,0 +1,8 @@
+{
+  "name": "MEAN Maryland Tax Calculator",
+  "description": "A MEAN app that allows users to calculate their Maryland Income Tax.",
+  "repository": "TBD",
+  "logo": "TBD",
+  "keywords": ["node", "express", "angular", "MEAN", "mongodb", "REST", "API"],
+  "addons": ["mongolab"]
+}

@@ -90,7 +90,7 @@
 		</div>
 	  </div>
 	</div>
-	<div class="form-group">
+	<!-- <div class="form-group">
 	<label class="col-sm-4 control-label" for="wagesSalariesAndOrTips">Wages, salaries, and/or tips:</label>
 	  <div class="col-sm-4">
 		<div class="input-group">
@@ -107,13 +107,16 @@
 			<input class="form-control" type="text" ng-model="form.earnedIncome" ui-number-mask="2" id="earnedIncome" /><br/>
 		</div>
 	  </div>
-	</div>
+	</div> -->
+	<br/><br/>
 	<div class="form-group">
-	   <!-- <div class="pull-left"> -->
-	   <div class="col-sm-offset-1 col-sm-6">
-		<input class="btn btn-default" type="button" value="Calculate" ng-click="calculate(form)" /><br/><br/>
+	<label class="col-sm-4 control-label" for="calculate"></label>
+	  <div class="col-sm-4">
+	   <!-- <div class="col-sm-offset-1 col-sm-6"> -->
+		<input class="btn btn-default" type="button" value="Calculate" ng-click="calculate(form)" id="calculate"/><br/><br/>
 	Total Tax: {{form.totalTax}}
-		</div>
+	   <!-- </div> -->
+	  </div>
 	</div>
 	</form>
   <!-- <table class="table table-hover">

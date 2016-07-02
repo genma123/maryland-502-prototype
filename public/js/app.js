@@ -105,8 +105,12 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 		});
 		
 		$scope.calculate = function(form) {
-			// TODO add option for filing status
-			// var 
+			var adjustedGrossIncome = form.adjustedGrossIncome;
+			
+			if (adjustedGrossIncome < 10300.0) { // TODO base this on filing status
+				form.totalTax = 0.0;
+			}
+			
 			var standardDeduction = calculateStandardDeduction(form);
 			
 			console.log("standard deduction: " + standardDeduction);
@@ -115,7 +119,12 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 			
 			console.log("exemption amount: " + exemptionAmount);
 			
-			form.totalTax = parseInt(form.adjustedGrossIncome) + parseInt(form.wagesSalariesAndOrTips);
+			var netTaxable = parseInt(form.adjustedGrossIncome) - standardDeduction - exemptionAmount;
+			
+			console.log("net taxable: " + netTaxable);
+			
+			form.totalTax = calculateMarylandTax(form, netTaxable);
+			
 			/* $scope.totalTax = $scope.adjustedGrossIncome + $scope.taxableInterest - $scope.unemploymentCompensation * 100; */
 		}
 		
@@ -221,4 +230,39 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 			var exemptionAmount = calculateExemptionMultiplier(form);
 			console.log("exemptionAmount: " + exemptionAmount);
 			return exemptionAmount * totalRegularExemptions;
+	};
+	
+	var calculateMarylandTax = function(form, netTaxable) {
+		var bracketsSchedule1 = [{ bottom: 0.0, top: 1000.0, offset: 0.0, rate: 2.0 },
+			 { bottom: 1000.0, top: 2000.0, offset: 20.0, rate: 3.0 },
+			 { bottom: 2000.0, top: 3000.0, offset: 50.0, rate: 4.0 },
+			 { bottom: 3000.0, top: 100000.0, offset: 90.0, rate: 4.75 },
+			 { bottom: 100000.0, top: 125000.0, offset: 4697.5, rate: 5.0 },
+			 { bottom: 125000.0, top: 150000.0, offset: 5947.5, rate: 5.25 },
+			 { bottom: 150000.0, top: 250000.0, offset: 7260.0, rate: 5.5 },
+			 { bottom: 250000.0, top: 10000000.0, offset: 12760.0, rate: 5.75 } ];
+			 
+		var bracketsSchedule2 = [ { bottom: 0.0, top: 1000.0, offset: 0.0, rate: 2.0 },
+			 { bottom: 1000.0, top: 2000.0, offset: 20.0, rate: 3.0 },
+			 { bottom: 2000.0, top: 3000.0, offset: 50.0, rate: 4.0 },
+			 { bottom: 3000.0, top: 150000.0, offset: 90.0, rate: 4.75 },
+			 { bottom: 150000.0, top: 175000.0, offset: 7072.5, rate: 5.0 },
+			 { bottom: 175000.0, top: 225000.0, offset: 8322.5, rate: 5.25 },
+			 { bottom: 225000.0, top: 300000.0, offset: 10947.5, rate: 5.5 },
+			 { bottom: 300000.0, top: 10000000.0, offset: 15072.5, rate: 5.75 } ];
+			 
+		var brackets = form.filingStatus.code > 2 ? bracketsSchedule2 : bracketsSchedule1;
+		
+		var stateTax = 0.0;
+		for (var i=0; i<brackets.length; i++) {
+			var bracket = brackets[i];
+			if (form.adjustedGrossIncome > bracket.bottom && form.adjustedGrossIncome <= bracket.top) {
+				stateTax = bracket.offset + (netTaxable - bracket.bottom) * bracket.rate * 0.01;
+				break;
+			}
+		}
+		
+		var localTax = netTaxable * form.subdivision.rate;
+		
+		return stateTax + localTax;
 	};

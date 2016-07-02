@@ -22,9 +22,9 @@ angular.module("marylandTaxApp", ['ngRoute', 'currencyInputMask', 'ui.utils.mask
                 redirectTo: "/"
             })
     })
-    /* DEFINE SERVICES AND CONTROLLERS LATER (IN SEPARATE FILES) */
+    /* DEFINE SERVICES AND CONTROLLERS LATER (IN SEPARATE FILES) * /
 	.service("Maryland502", function($http) {
-		/*
+		/ *
         this.getContacts = function() {
             return $http.get("/contacts").
                 then(function(response) {
@@ -32,7 +32,7 @@ angular.module("marylandTaxApp", ['ngRoute', 'currencyInputMask', 'ui.utils.mask
                 }, function(response) {
                     alert("Error finding contacts.");
                 });
-        } */
+        } * /
         this.createMaryland502 = function(form) {
             return $http.post("/forms", form).
                 then(function(response) {
@@ -50,7 +50,7 @@ angular.module("marylandTaxApp", ['ngRoute', 'currencyInputMask', 'ui.utils.mask
                     alert("Error finding this form.");
                 });
         }
-        /* this.editContact = function(contact) {
+        / * this.editContact = function(contact) {
             var url = "/contacts/" + contact._id;
             console.log(contact._id);
             return $http.put(url, contact).
@@ -71,8 +71,8 @@ angular.module("marylandTaxApp", ['ngRoute', 'currencyInputMask', 'ui.utils.mask
                     console.log(response);
                 });
         }
-    })
-    .controller("ListController", function(contacts, $scope) {
+    }) */
+    /* .controller("ListController", function(contacts, $scope) {
         $scope.contacts = contacts.data;
     })
     .controller("NewContactController", function($scope, $location, Contacts) {
@@ -114,8 +114,8 @@ angular.module("marylandTaxApp", ['ngRoute', 'currencyInputMask', 'ui.utils.mask
 
         $scope.deleteContact = function(contactId) {
             Contacts.deleteContact(contactId);
-        }*/
-    })
+        }
+    }) */
     .controller("MarylandTaxController", ['$scope', function($scope, $routeParams, Maryland502) {
         /* Contacts.getContact($routeParams.contactId).then(function(doc) {
             $scope.contact = doc.data;

@@ -88,6 +88,8 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 		
 		$scope.areYouADependentChoices = ['No', 'Yes', 'Both myself and my spouse'];
 
+		$scope.numberOfDependentChoices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 10, 11, 12 ];
+		
 		$scope.form = new Maryland502({
 			totalTax: '0.00',
 			adjustedGrossIncome: '0.00',
@@ -101,14 +103,46 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 			spouseSelf: false,
 			spouse65orOver: false,
 			spouseBlind: false,
-			numberOfDependents: 0
+			numberOfDependents: 0,
+			numberOfDependentsOver65: 0
 		});
 		
 		$scope.calculate = function(form) {
-			var adjustedGrossIncome = form.adjustedGrossIncome;
-			
-			if (adjustedGrossIncome < 10300.0) { // TODO base this on filing status
-				form.totalTax = 0.0;
+			var adjustedGrossIncome = parseFloat(form.adjustedGrossIncome);
+			console.log("adjustedGrossIncome: " + adjustedGrossIncome);
+
+			var minimumFilingIncomesUnder65 = [ 10300.0, 4000.0, 10300.0, 20600.0, 13250.0, 16600.0 ];
+
+			if (!form.you65orOver && !form.spouse65orOver) {
+				console.log("minimumFilingIncome: " + minimumFilingIncomesUnder65[form.filingStatus.code]);
+				if (adjustedGrossIncome < minimumFilingIncomesUnder65[form.filingStatus.code]) { // TODO base this on filing status
+					form.totalTax = 0.0;
+					return;
+				}
+			} else {
+				// complicated
+				var filingStatus = form.filingStatus.code;
+				var minimumFilingIncome = 0.0;
+				if ((filingStatus === 0 || filingStatus === 2) && form.you65orOver) {
+					minimumFilingIncome = 11850.0;
+				} else if (filingStatus === 3) {
+					if (form.you65orOver !== form.spouse65orOver) {
+						minimumFilingIncome = 21850.0;
+					} else if (form.you65orOver && form.spouse65orOver) {
+						minimumFilingIncome = 23100.0;
+					}
+				} else if (filingStatus === 1 && form.you65orOver) {
+					minimumFilingIncome = 4000.0;
+				} else if (filingStatus === 4 && form.you65orOver) {
+					minimumFilingIncome = 14800.0;
+				} else if (filingStatus === 5 && form.you65orOver) {
+					minimumFilingIncome = 17850.0;
+				}
+				console.log("minimumFilingIncome: " + minimumFilingIncome);
+				if (adjustedGrossIncome < minimumFilingIncome) {
+					form.totalTax = 0.0;
+					return;
+				}
 			}
 			
 			var standardDeduction = calculateStandardDeduction(form);
@@ -119,7 +153,7 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 			
 			console.log("exemption amount: " + exemptionAmount);
 			
-			var netTaxable = parseInt(form.adjustedGrossIncome) - standardDeduction - exemptionAmount;
+			var netTaxable = adjustedGrossIncome - standardDeduction - exemptionAmount;
 			
 			console.log("net taxable: " + netTaxable);
 			
@@ -221,15 +255,25 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 			console.log("spouse65orOver: " + form.spouse65orOver);
 			console.log("spouseBlind: " + form.spouseBlind);
 			console.log("numberOfDependents: " + form.numberOfDependents);
+			console.log("numberOfDependentsOver65: " + form.numberOfDependentsOver65);
 			if (form.filingStatus.code === 2) {
 				return 0.0;
 			}
 			var totalRegularExemptions = form.numberOfDependents +
+						form.numberOfDependentsOver65 +
 						(form.yourself ? 1 : 0) +
 						(form.spouseSelf ? 1 : 0);
-			var exemptionAmount = calculateExemptionMultiplier(form);
-			console.log("exemptionAmount: " + exemptionAmount);
-			return exemptionAmount * totalRegularExemptions;
+			var exemptionMultiplier = calculateExemptionMultiplier(form);
+			console.log("exemptionMultiplier: " + exemptionMultiplier);
+			var regularExemptionAmount = totalRegularExemptions * exemptionMultiplier;
+			console.log("regularExemptionAmount: " + regularExemptionAmount);
+			var totalSpecialExemptions = (form.you65orOver ? 1 : 0) +
+										(form.youBlind ? 1 : 0) +
+										(form.spouse65orOver ? 1 : 0) +
+										(form.spouseBlind ? 1 : 0);
+			var specialExemptionAmount = 1000.0 * totalSpecialExemptions;
+			console.log("specialExemptionAmount: " + specialExemptionAmount);
+			return regularExemptionAmount + specialExemptionAmount;
 	};
 	
 	var calculateMarylandTax = function(form, netTaxable) {
@@ -252,17 +296,19 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 			 { bottom: 300000.0, top: 10000000.0, offset: 15072.5, rate: 5.75 } ];
 			 
 		var brackets = form.filingStatus.code > 2 ? bracketsSchedule2 : bracketsSchedule1;
-		
 		var stateTax = 0.0;
 		for (var i=0; i<brackets.length; i++) {
 			var bracket = brackets[i];
 			if (form.adjustedGrossIncome > bracket.bottom && form.adjustedGrossIncome <= bracket.top) {
+				console.log("bracket.bottom: " + bracket.bottom + ", bracket.top: " + bracket.top);
 				stateTax = bracket.offset + (netTaxable - bracket.bottom) * bracket.rate * 0.01;
+				console.log("stateTax: " + stateTax);
 				break;
 			}
 		}
 		
 		var localTax = netTaxable * form.subdivision.rate;
+		console.log("localTax: " + localTax);
 		
 		return stateTax + localTax;
 	};

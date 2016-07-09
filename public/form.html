@@ -22,13 +22,6 @@
 		          ng-options="filingStatus.status for filingStatus in filingStatuses"></select><br/>
 	  </div> 
 	</div>
-	<!-- <div class="form-group">
-	  <label class="col-sm-4 control-label" for="areYouADependent">Are you someone's dependent?:</label>
-	  <div class="col-sm-6">
-	  <select class="form-control" ng-model="areYouADependent" id="areYouADependent"
-		          ng-options="areYouADependent for areYouADependent in areYouADependentChoices"></select><br/>
-	  </div> 
-	</div> -->
 	<div class="form-group">
 	  <label class="col-sm-4 control-label">Your Exemptions:</label>
 	  <div class="col-sm-6">
@@ -44,7 +37,7 @@
 	  </div>
 	  </label>
 	</div>
-	<div class="form-group">
+	<!-- <div class="form-group">
 	  <label class="col-sm-4 control-label">Dependents:</label>
 	  <div class="col-sm-6">
 		<label class="radio-inline">
@@ -58,7 +51,24 @@
 		</label>
 	  </div>
 	  </label>
-	</div>
+	</div> -->
+    <div class="form-group">
+	  <label class="col-sm-4 control-label">Dependents:</label>
+	  <div class="col-sm-2">
+		  <label for="numberOfDependents">Regular
+			  <select id="numberOfDependents" class="form-control" style="font-weight: normal"
+					ng-model="form.numberOfDependents" ng-options="numberOfDependents for numberOfDependents in numberOfDependentChoices">
+			  </select>
+		  </label>
+	  </div>
+	  <div class="col-sm-2">
+		  <label for="numberOfDependentsOver65">Over 65
+			  <select id="numberOfDependents" class="form-control" style="font-weight: normal"
+					ng-model="form.numberOfDependentsOver65" ng-options="numberOfDependentsOver65 for numberOfDependentsOver65 in numberOfDependentChoices">
+			  </select>
+		   </label>
+	   </div>
+    </div>
 	<div class="form-group">
 	  <label class="col-sm-4 control-label">Spouse's Exemptions:</label>
 	  <div class="col-sm-6">
@@ -90,24 +100,6 @@
 		</div>
 	  </div>
 	</div>
-	<!-- <div class="form-group">
-	<label class="col-sm-4 control-label" for="wagesSalariesAndOrTips">Wages, salaries, and/or tips:</label>
-	  <div class="col-sm-4">
-		<div class="input-group">
-			<span class="input-group-addon">$</span>
-			<input class="form-control" type="text" ng-model="form.wagesSalariesAndOrTips" ui-number-mask="2" id="wagesSalariesAndOrTips" /><br/>
-		</div>
-	  </div>
-	</div>
-	<div class="form-group">
-	<label class="col-sm-4 control-label" for="earnedIncome">Earned Income:</label>
-	  <div class="col-sm-4">
-		<div class="input-group">
-			<span class="input-group-addon">$</span>
-			<input class="form-control" type="text" ng-model="form.earnedIncome" ui-number-mask="2" id="earnedIncome" /><br/>
-		</div>
-	  </div>
-	</div> -->
 	<br/><br/>
 	<div class="form-group">
 	<label class="col-sm-4 control-label" for="calculate"></label>

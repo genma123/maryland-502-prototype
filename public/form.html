@@ -18,21 +18,21 @@
 	<div class="form-group">
 	  <label class="col-sm-4 control-label" for="filingStatus">Filing Status:</label>
 	  <div class="col-sm-6">
-	  <select class="form-control" ng-model="form.filingStatus" id="filingStatus"
+	  <select class="form-control" ng-model="form.filingStatus" ng-change="calculate(form)" id="filingStatus"
 		          ng-options="filingStatus.status for filingStatus in filingStatuses"></select><br/>
 	  </div> 
 	</div>
-	<div class="form-group">
+	<div ng-hide="form.filingStatus.code == 2" class="form-group">
 	  <label class="col-sm-4 control-label">Your Exemptions:</label>
 	  <div class="col-sm-6">
 		<label class="checkbox-inline">
-		  <input type="checkbox" ng-model="form.yourself" id="yourself" value="true"> Yourself
+		  <input type="checkbox" ng-model="form.yourself" ng-change="calculate(form)" id="yourself" value="true"> Yourself
 		</label>
 		<label class="checkbox-inline">
-		  <input type="checkbox" ng-model="form.you65orOver" id="you65orOver" value="true"> 65 or over
+		  <input type="checkbox" ng-model="form.you65orOver" ng-change="calculate(form)" id="you65orOver" value="true"> 65 or over
 		</label>
 		<label class="checkbox-inline">
-		  <input type="checkbox" ng-model="form.youBlind" id="youBlind" value="true"> Blind
+		  <input type="checkbox" ng-model="form.youBlind" ng-change="calculate(form)" id="youBlind" value="true"> Blind
 		</label>
 	  </div>
 	  </label>
@@ -52,43 +52,50 @@
 	  </div>
 	  </label>
 	</div> -->
-    <div class="form-group">
+    <div ng-hide="form.filingStatus.code == 2" class="form-group">
 	  <label class="col-sm-4 control-label">Dependents:</label>
 	  <div class="col-sm-2">
 		  <label for="numberOfDependents">Regular
 			  <select id="numberOfDependents" class="form-control" style="font-weight: normal"
-					ng-model="form.numberOfDependents" ng-options="numberOfDependents for numberOfDependents in numberOfDependentChoices">
+					ng-model="form.numberOfDependents" ng-change="calculate(form)" ng-options="numberOfDependents for numberOfDependents in numberOfDependentChoices">
 			  </select>
 		  </label>
 	  </div>
 	  <div class="col-sm-2">
 		  <label for="numberOfDependentsOver65">Over 65
 			  <select id="numberOfDependents" class="form-control" style="font-weight: normal"
-					ng-model="form.numberOfDependentsOver65" ng-options="numberOfDependentsOver65 for numberOfDependentsOver65 in numberOfDependentChoices">
+					ng-model="form.numberOfDependentsOver65" ng-change="calculate(form)" ng-options="numberOfDependentsOver65 for numberOfDependentsOver65 in numberOfDependentChoices">
 			  </select>
 		   </label>
 	   </div>
     </div>
-	<div class="form-group">
+	<div ng-show="form.filingStatus.code > 2 && form.filingStatus.code < 5" class="form-group">
 	  <label class="col-sm-4 control-label">Spouse's Exemptions:</label>
 	  <div class="col-sm-6">
 		<label class="checkbox-inline">
-		  <input type="checkbox" ng-model="form.spouseSelf" id="spouseSelf" value="true"> Spouse
+		  <input type="checkbox" ng-model="form.spouseSelf" ng-change="calculate(form)" id="spouseSelf" value="true"> Spouse
 		</label>
 		<label class="checkbox-inline">
-		  <input type="checkbox" ng-model="form.spouse65orOver" id="spouse65orOver" value="true"> 65 or over
+		  <input type="checkbox" ng-model="form.spouse65orOver" ng-change="calculate(form)" id="spouse65orOver" value="true"> 65 or over
 		</label>
 		<label class="checkbox-inline">
-		  <input type="checkbox" ng-model="form.spouseBlind" id="spouseBlind" value="true"> Blind
+		  <input type="checkbox" ng-model="form.spouseBlind" ng-change="calculate(form)" id="spouseBlind" value="true"> Blind
 		</label>
 	  </div>
 	  </label>
 	</div>
 	<div class="form-group">
+		<label class="col-sm-4 control-label" for="calculate"></label>
+		  <div class="col-sm-4">
+		  Standard Deduction:&nbsp;{{form.standardDeduction | currency }}<br/>
+		  Exemption Amount:&nbsp;{{form.exemptionAmount | currency }}
+		  </div>
+	</div>
+	<div class="form-group">
 	  <label class="col-sm-4 control-label" for="subdivision">Subdivision:</label>
 	  <div class="col-sm-6">
-	  <select class="form-control" ng-model="form.subdivision" id="subdivision"
-		          ng-options="subdivision.locality for subdivision in subdivisionChoices"></select>&nbsp;Rate:{{form.subdivision.rate}}<br/>
+	  <select class="form-control" ng-model="form.subdivision" ng-change="calculate(form)" id="subdivision"
+		          ng-options="subdivision.locality for subdivision in subdivisionChoices"></select>&nbsp;&nbsp;&nbsp;Rate:{{form.subdivision.rate}}<br/>
 	  </div> 
 	</div>
 	<div class="form-group">
@@ -96,17 +103,17 @@
 	  <div class="col-sm-4">
 		<div class="input-group">
 			<span class="input-group-addon">$</span>
-			<input class="form-control" type="text" ng-model="form.adjustedGrossIncome" ui-number-mask="2" id="adjustedGrossIncome" /><br/>
+			<input class="form-control" type="text" ng-model="form.adjustedGrossIncome" ng-change="calculate(form)" ui-number-mask="2" id="adjustedGrossIncome" />
 		</div>
 	  </div>
 	</div>
-	<br/><br/>
+	<br/>
 	<div class="form-group">
 	<label class="col-sm-4 control-label" for="calculate"></label>
 	  <div class="col-sm-4">
 	   <!-- <div class="col-sm-offset-1 col-sm-6"> -->
-		<input class="btn btn-default" type="button" value="Calculate" ng-click="calculate(form)" id="calculate"/><br/><br/>
-	Total Tax: {{form.totalTax}}
+		<input class="btn btn-default" type="button" value="Calculate" ng-click="calculate(form)" id="calculate"/><br/>
+	<h3>Total Tax: <strong>{{form.totalTax | currency }}</strong></h3>
 	   <!-- </div> -->
 	  </div>
 	</div>

@@ -104,12 +104,22 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 			spouse65orOver: false,
 			spouseBlind: false,
 			numberOfDependents: 0,
-			numberOfDependentsOver65: 0
+			numberOfDependentsOver65: 0,
+			standardDeduction: 0.0,
+			exemptionAmount: 0.0
 		});
 		
 		$scope.calculate = function(form) {
 			var adjustedGrossIncome = parseFloat(form.adjustedGrossIncome);
 			console.log("adjustedGrossIncome: " + adjustedGrossIncome);
+			
+			form.standardDeduction = calculateStandardDeduction(form);
+			
+			console.log("standard deduction: " + form.standardDeduction);
+			
+			form.exemptionAmount = calculateExemption(form);
+			
+			console.log("exemption amount: " + form.exemptionAmount);
 
 			var minimumFilingIncomesUnder65 = [ 10300.0, 4000.0, 10300.0, 20600.0, 13250.0, 16600.0 ];
 
@@ -145,15 +155,7 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 				}
 			}
 			
-			var standardDeduction = calculateStandardDeduction(form);
-			
-			console.log("standard deduction: " + standardDeduction);
-			
-			var exemptionAmount = calculateExemption(form);
-			
-			console.log("exemption amount: " + exemptionAmount);
-			
-			var netTaxable = adjustedGrossIncome - standardDeduction - exemptionAmount;
+			var netTaxable = adjustedGrossIncome - form.standardDeduction - form.exemptionAmount;
 			
 			console.log("net taxable: " + netTaxable);
 			

@@ -104,7 +104,8 @@
 		<div class="input-group">
 			<span class="input-group-addon">$</span>
 			<input class="form-control" type="text" ng-model="form.adjustedGrossIncome" ng-change="calculate(form)" ui-number-mask="2" id="adjustedGrossIncome" />
-		</div>
+		</div><br/>
+			Minimum Filing Income:&nbsp;{{form.minimumFilingIncome | currency}}
 	  </div>
 	</div>
 	<br/>

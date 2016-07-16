@@ -1,7 +1,7 @@
 {
-  "name": "MEAN",
-  "version": "1.0.0",
-  "description": "A MEAN app that allows users to manage contact lists",
+  "name": "Maryland 502 Tax Calculator",
+  "version": "0.1.0",
+  "description": "Maryland Personal Income Tax Calculator for those who file 1040EZ",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,19 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chrisckchang/mean-contactlist.git"
+    "url": "https://github.com/genma123/maryland-502-prototype.git"
   },
   "keywords": [
     "MEAN",
     "Express",
     "Angular"
   ],
-  "author": "Chris Chang",
+  "author": "John Emmerling",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/chrisckchang/mean-contactlist/issues"
-  },
-  "homepage": "https://github.com/chrisckchang/mean-contactlist",
   "dependencies": {
     "body-parser": "^1.13.3",
     "express": "^4.13.3",

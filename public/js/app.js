@@ -106,7 +106,8 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 			numberOfDependents: 0,
 			numberOfDependentsOver65: 0,
 			standardDeduction: 0.0,
-			exemptionAmount: 0.0
+			exemptionAmount: 0.0,
+			minimumFilingIncome: 10300.0
 		});
 		
 		$scope.calculate = function(form) {
@@ -123,33 +124,33 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 
 			var minimumFilingIncomesUnder65 = [ 10300.0, 4000.0, 10300.0, 20600.0, 13250.0, 16600.0 ];
 
-			if (!form.you65orOver && !form.spouse65orOver) {
+			if (form.filingStatus.code === 2 || (!form.you65orOver && !form.spouse65orOver)) {
+				form.minimumFilingIncome = minimumFilingIncomesUnder65[form.filingStatus.code];
 				console.log("minimumFilingIncome: " + minimumFilingIncomesUnder65[form.filingStatus.code]);
-				if (adjustedGrossIncome < minimumFilingIncomesUnder65[form.filingStatus.code]) { // TODO base this on filing status
+				if (adjustedGrossIncome < form.minimumFilingIncome) { // TODO base this on filing status
 					form.totalTax = 0.0;
 					return;
 				}
 			} else {
 				// complicated
 				var filingStatus = form.filingStatus.code;
-				var minimumFilingIncome = 0.0;
 				if ((filingStatus === 0 || filingStatus === 2) && form.you65orOver) {
-					minimumFilingIncome = 11850.0;
+					form.minimumFilingIncome = 11850.0;
 				} else if (filingStatus === 3) {
 					if (form.you65orOver !== form.spouse65orOver) {
-						minimumFilingIncome = 21850.0;
+						form.minimumFilingIncome = 21850.0;
 					} else if (form.you65orOver && form.spouse65orOver) {
-						minimumFilingIncome = 23100.0;
+						form.minimumFilingIncome = 23100.0;
 					}
 				} else if (filingStatus === 1 && form.you65orOver) {
-					minimumFilingIncome = 4000.0;
+					form.minimumFilingIncome = 4000.0;
 				} else if (filingStatus === 4 && form.you65orOver) {
-					minimumFilingIncome = 14800.0;
+					form.minimumFilingIncome = 14800.0;
 				} else if (filingStatus === 5 && form.you65orOver) {
-					minimumFilingIncome = 17850.0;
+					form.minimumFilingIncome = 17850.0;
 				}
-				console.log("minimumFilingIncome: " + minimumFilingIncome);
-				if (adjustedGrossIncome < minimumFilingIncome) {
+				console.log("minimumFilingIncome: " + form.minimumFilingIncome);
+				if (adjustedGrossIncome < form.minimumFilingIncome) {
 					form.totalTax = 0.0;
 					return;
 				}

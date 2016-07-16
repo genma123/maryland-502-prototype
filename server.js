@@ -16,7 +16,8 @@ app.use(bodyParser.json());
 var db;
 
 // Connect to the database before starting the application server. 
-mongodb.MongoClient.connect(process.env.MONGODB_URI || "mongodb://localhost/mean-formlist", function (err, database) {
+var connectString = process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || "mongodb://localhost/mean-formlist";
+mongodb.MongoClient.connect(connectString, function (err, database) {
   if (err) {
     console.log(err);
     process.exit(1);

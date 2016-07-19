@@ -1,5 +1,5 @@
 {
-  "name": "Maryland 502 Tax Calculator",
+  "name": "maryland-502-prototype",
   "version": "0.1.0",
   "description": "Maryland Personal Income Tax Calculator for those who file 1040EZ",
   "main": "server.js",

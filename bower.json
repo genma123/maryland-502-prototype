@@ -31,5 +31,8 @@
     "ngCurrencyMask": "ng-currency-mask#^1.0.61",
     "angular-input-masks": "^2.3.0",
     "angular-resource": "^1.5.7"
+  },
+  "resolutions": {
+    "angular": "^1.5.6"
   }
 }

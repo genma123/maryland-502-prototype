@@ -87,6 +87,8 @@
 	<div class="form-group">
 		<label class="col-sm-4 control-label" for="calculate"></label>
 		  <div class="col-sm-4">
+		  Total Regular Exemptions:&nbsp;{{form.totalRegularExemptions}}<br/>
+		  Total Special Exemptions:&nbsp;{{form.totalSpecialExemptions}}<br/>
 		  Standard Deduction:&nbsp;{{form.standardDeduction | currency }}<br/>
 		  Exemption Amount:&nbsp;{{form.exemptionAmount | currency }}
 		  </div>
@@ -105,10 +107,13 @@
 			<span class="input-group-addon">$</span>
 			<input class="form-control" type="text" ng-model="form.adjustedGrossIncome" ng-change="calculate(form)" ui-number-mask="2" id="adjustedGrossIncome" />
 		</div><br/>
-			Minimum Filing Income:&nbsp;{{form.minimumFilingIncome | currency}}
+			Minimum Filing Income:&nbsp;{{form.minimumFilingIncome | currency}}<br/>
+			Net Taxable Income:&nbsp;{{form.netTaxableIncome | currency}}<br/>
+			Bracket Rate:&nbsp;{{form.bracketRate}}%<br/>
+			Maryland Tax:&nbsp;{{form.marylandTax | currency}}<br/>
+			Local Tax::&nbsp;{{form.localTax | currency}}
 	  </div>
 	</div>
-	<br/>
 	<div class="form-group">
 	<label class="col-sm-4 control-label" for="calculate"></label>
 	  <div class="col-sm-4">

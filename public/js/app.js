@@ -105,9 +105,15 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 			spouseBlind: false,
 			numberOfDependents: 0,
 			numberOfDependentsOver65: 0,
+			totalRegularExemptions: 0,
+			totalSpecialExemptions: 0,
 			standardDeduction: 0.0,
 			exemptionAmount: 0.0,
-			minimumFilingIncome: 10300.0
+			minimumFilingIncome: 10300.0,
+			netTaxableIncome: 0.0,
+			bracketRate: 0.0,
+			marylandTax: 0.0,
+			localTax: 0.0
 		});
 		
 		$scope.calculate = function(form) {
@@ -156,11 +162,11 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 				}
 			}
 			
-			var netTaxable = adjustedGrossIncome - form.standardDeduction - form.exemptionAmount;
+			form.netTaxableIncome = adjustedGrossIncome - form.standardDeduction - form.exemptionAmount;
 			
-			console.log("net taxable: " + netTaxable);
+			console.log("net taxable: " + form.netTaxableIncome);
 			
-			form.totalTax = calculateMarylandTax(form, netTaxable);
+			form.totalTax = calculateMarylandTax(form);
 			
 			/* $scope.totalTax = $scope.adjustedGrossIncome + $scope.taxableInterest - $scope.unemploymentCompensation * 100; */
 		}
@@ -262,24 +268,54 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 			if (form.filingStatus.code === 2) {
 				return 0.0;
 			}
-			var totalRegularExemptions = form.numberOfDependents +
-						form.numberOfDependentsOver65 +
-						(form.yourself ? 1 : 0) +
-						(form.spouseSelf ? 1 : 0);
+			form.totalRegularExemptions = countExemptions(form);
 			var exemptionMultiplier = calculateExemptionMultiplier(form);
 			console.log("exemptionMultiplier: " + exemptionMultiplier);
-			var regularExemptionAmount = totalRegularExemptions * exemptionMultiplier;
+			var regularExemptionAmount = form.totalRegularExemptions * exemptionMultiplier;
 			console.log("regularExemptionAmount: " + regularExemptionAmount);
-			var totalSpecialExemptions = (form.you65orOver ? 1 : 0) +
-										(form.youBlind ? 1 : 0) +
-										(form.spouse65orOver ? 1 : 0) +
-										(form.spouseBlind ? 1 : 0);
-			var specialExemptionAmount = 1000.0 * totalSpecialExemptions;
+			form.totalSpecialExemptions = countSpecialExemptions(form);
+			var specialExemptionAmount = 1000.0 * form.totalSpecialExemptions;
 			console.log("specialExemptionAmount: " + specialExemptionAmount);
 			return regularExemptionAmount + specialExemptionAmount;
 	};
 	
-	var calculateMarylandTax = function(form, netTaxable) {
+	var countExemptions = function(form) {
+		switch(form.filingStatus.code) {
+			case 2: return 0;
+			case 0:
+			case 1:
+			case 5:
+					return form.numberOfDependents +
+									form.numberOfDependentsOver65 +
+									(form.yourself ? 1 : 0);
+			case 3:
+			case 4:
+					return form.numberOfDependents +
+									form.numberOfDependentsOver65 +
+									(form.yourself ? 1 : 0) +
+									(form.spouseSelf ? 1 : 0);
+		}
+		
+	}
+	
+	var countSpecialExemptions = function(form) {
+		switch(form.filingStatus.code) {
+			case 2: return 0;
+			case 0:
+			case 1:
+			case 5:
+					return (form.you65orOver ? 1 : 0) +
+										(form.youBlind ? 1 : 0);
+			case 3:
+			case 4:
+					return (form.you65orOver ? 1 : 0) +
+										(form.youBlind ? 1 : 0) +
+										(form.spouse65orOver ? 1 : 0) +
+										(form.spouseBlind ? 1 : 0);
+		}
+	}
+	
+	var calculateMarylandTax = function(form) {
 		var bracketsSchedule1 = [{ bottom: 0.0, top: 1000.0, offset: 0.0, rate: 2.0 },
 			 { bottom: 1000.0, top: 2000.0, offset: 20.0, rate: 3.0 },
 			 { bottom: 2000.0, top: 3000.0, offset: 50.0, rate: 4.0 },
@@ -299,19 +335,19 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
 			 { bottom: 300000.0, top: 10000000.0, offset: 15072.5, rate: 5.75 } ];
 			 
 		var brackets = form.filingStatus.code > 2 ? bracketsSchedule2 : bracketsSchedule1;
-		var stateTax = 0.0;
 		for (var i=0; i<brackets.length; i++) {
 			var bracket = brackets[i];
 			if (form.adjustedGrossIncome > bracket.bottom && form.adjustedGrossIncome <= bracket.top) {
 				console.log("bracket.bottom: " + bracket.bottom + ", bracket.top: " + bracket.top);
-				stateTax = bracket.offset + (netTaxable - bracket.bottom) * bracket.rate * 0.01;
-				console.log("stateTax: " + stateTax);
+				form.marylandTax = bracket.offset + (form.netTaxableIncome - bracket.bottom) * bracket.rate * 0.01;
+				console.log("stateTax: " + form.marylandTax);
+				form.bracketRate = bracket.rate;
 				break;
 			}
 		}
 		
-		var localTax = netTaxable * form.subdivision.rate;
-		console.log("localTax: " + localTax);
+		form.localTax = form.netTaxableIncome * form.subdivision.rate;
+		console.log("localTax: " + form.localTax);
 		
-		return stateTax + localTax;
+		return form.marylandTax + form.localTax;
 	};

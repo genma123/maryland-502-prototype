@@ -1,4 +1,4 @@
-angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 'ui.utils.masks'])
+angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 'ui.utils.masks', 'ngDialog'])
     .config(function($routeProvider) {
         $routeProvider
             .when("/", {
@@ -8,4 +8,16 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 
             .otherwise({
                 redirectTo: "/"
             })
-    });
+    }).config(['ngDialogProvider', function (ngDialogProvider) {
+            ngDialogProvider.setDefaults({
+                className: 'ngdialog-theme-default',
+                plain: false,
+                showClose: true,
+                closeByDocument: true,
+                closeByEscape: true,
+                appendTo: false,
+                preCloseCallback: function () {
+                    console.log('default pre-close callback');
+                }
+            });
+        }]);

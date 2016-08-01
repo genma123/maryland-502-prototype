@@ -1,6 +1,6 @@
 angular.module("marylandTaxApp")
-	.controller("MarylandTaxController", ['$scope', '$routeParams', 'Maryland502',
-		function($scope, $routeParams, Maryland502) {
+	.controller("MarylandTaxController", ['$scope', '$routeParams', '$rootScope', 'ngDialog', 'Maryland502',
+		function($scope, $routeParams, $rootScope, ngDialog, Maryland502) {
         /* Maryland502.getMaryland502($routeParams.contactId).then(function(doc) {
             $scope.form = doc.data;
         }, function(response) {
@@ -65,7 +65,8 @@ angular.module("marylandTaxApp")
 			netTaxableIncome: 0.0,
 			bracketRate: 0.0,
 			marylandTax: 0.0,
-			localTax: 0.0
+			localTax: 0.0,
+			formId: ""
 		});
 		
 		$scope.calculate = function(form) {
@@ -123,6 +124,18 @@ angular.module("marylandTaxApp")
 			/* $scope.totalTax = $scope.adjustedGrossIncome + $scope.taxableInterest - $scope.unemploymentCompensation * 100; */
 		}
 		
+		$scope.openControllerAsController = function (form) {
+                $rootScope.theme = 'ngdialog-theme-default';
+				
+                ngDialog.open({
+                    template: 'controllerAsDialog',
+                    controller: 'InsideCtrlAs',
+                    controllerAs: 'ctrl',
+					scope: $scope,
+                    className: 'ngdialog-theme-default custom-style'
+                });
+            };
+
         /* $scope.toggleEdit = function() {
             $scope.editMode = true;
             $scope.contactFormUrl = "contact-form.html";
@@ -142,7 +155,12 @@ angular.module("marylandTaxApp")
         $scope.deleteContact = function(contactId) {
             Contacts.deleteContact(contactId);
         } */
-    }]);
+    }])
+	.controller('InsideCtrlAs', ['$scope', '$rootScope', function ($scope, $rootScope) {
+		console.log("in InsideCtrlAs");
+		console.log("*** " + _.map($scope.form));
+            this.value = 'value from controller';
+    }]);;
 	
 	var calculateStandardDeduction = function(form) {
 		var marylandAdustedGrossIncome = parseInt(form.adjustedGrossIncome); // may want to add intermediate steps

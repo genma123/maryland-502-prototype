@@ -118,7 +118,8 @@
 	<label class="col-sm-4 control-label" for="calculate"></label>
 	  <div class="col-sm-4">
 	   <!-- <div class="col-sm-offset-1 col-sm-6"> -->
-		<input class="btn btn-default" type="button" value="Calculate" ng-click="calculate(form)" id="calculate"/><br/>
+		<!-- <input class="btn btn-default" type="button" value="Calculate" ng-click="calculate(form)" id="calculate"/> -->
+		<input class="btn btn-default" type="button" value="Save" ng-click="openControllerAsController()" id="save"/><br/>
 	<h3>Total Tax: <strong>{{form.totalTax | currency }}</strong></h3>
 	   <!-- </div> -->
 	  </div>
@@ -133,4 +134,24 @@
       </tr>
     </tbody>
   </table> -->
+      <script type="text/ng-template" id="controllerAsDialog">
+		<form class="form-horizontal">
+			<p>Form ID (Any random sequence of letters, numbers, etc.):</p>
+			<div class="form-group">
+			 <label class="col-sm-4 control-label" for="formId" style="padding-top: 0">&nbsp;</label>
+			  <div class="col-sm-4">
+			  <br/><input type="text" class="form-control" id="formId" ng-model="form.formId"/>
+			  </div>
+			</div>
+			<div class="form-group">
+			  <label class="col-sm-4 control-label" for="submit"></label>
+			  <div class="col-sm-4">
+				<input class="btn btn-default" type="button" value="Submit" ng-click="closeThisDialog()" id="submit"/>
+			  </div>
+			</div>
+			<!-- <div class="ngdialog-buttons">
+				<button type="button" class="ngdialog-button ngdialog-button-primary" ng-click="closeThisDialog()">Submit</button>
+			</div> -->
+		</form>
+    </script>
 </div>

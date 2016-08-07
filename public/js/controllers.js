@@ -1,6 +1,6 @@
 angular.module("marylandTaxApp")
-	.controller("MarylandTaxController", ['$scope', '$location', '$routeParams', '$rootScope', 'ngDialog', 'Maryland502',
-		function($scope, $location, $routeParams, $rootScope, ngDialog, Maryland502) {
+	.controller("MarylandTaxController", ['$scope', '$cookies', '$location', '$routeParams', '$rootScope', 'ngDialog', 'Maryland502',
+		function($scope, $cookies, $location, $routeParams, $rootScope, ngDialog, Maryland502) {
         /* Maryland502.getMaryland502($routeParams.contactId).then(function(doc) {
             $scope.form = doc.data;
         }, function(response) {
@@ -68,6 +68,19 @@ angular.module("marylandTaxApp")
 			localTax: 0.0,
 			formId: ""
 		});
+
+		var formIdentifier = $cookies.get('formId');
+		console.log("formIdentifier: " + formIdentifier);
+
+		if (formIdentifier) {
+			/*
+			$scope.form.$get({ "formIdentifier": formIdentifier},
+				function(response) {
+					// console.log("form: " + _.map(response));
+				}
+			);
+			*/
+		}
 		
 		$scope.calculate = function(form) {
 			var adjustedGrossIncome = parseFloat(form.adjustedGrossIncome);
@@ -137,6 +150,7 @@ angular.module("marylandTaxApp")
 						// post form to REST API
 						  $scope.form.$save(function (response) {
 							// $location.path('form' + response._id); not appropriate in this case
+							$cookies.put('formId', $scope.form.formId);
 						  }, function (errorResponse) {
 							$scope.error = errorResponse.data.message;
 						  });
@@ -147,7 +161,7 @@ angular.module("marylandTaxApp")
                     }
                 });
             };
-
+		
         /* $scope.toggleEdit = function() {
             $scope.editMode = true;
             $scope.contactFormUrl = "contact-form.html";

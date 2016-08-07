@@ -2,11 +2,20 @@ var router = require('express').Router();
 var mongoose = require('mongoose');
 require('./model');
 var Form = mongoose.model('Form');
+var _ = require('lodash');
 
 router.get('/api/forms', function (req, res, next) {
 console.log("in GET");
-  Form.find()
+	var query = {};
+	console.log("request query: " + _.map(req.query));
+	if (req.query.formIdentifier) {
+		query = { formId: req.query.formIdentifier };
+		console.log("query: " + _.map(query));
+	}
+
+  Form.find(query)
   .exec(function(err, forms) {
+	  console.log("forms: " + _.map(forms));
     if (err) { return next(err); }
     res.status(200).json(forms);
   });

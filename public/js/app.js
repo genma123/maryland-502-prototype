@@ -1,4 +1,4 @@
-angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'currencyInputMask', 'ui.utils.masks', 'ngDialog'])
+angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'ngCookies', 'currencyInputMask', 'ui.utils.masks', 'ngDialog'])
     .config(function($routeProvider) {
         $routeProvider
             .when("/", {

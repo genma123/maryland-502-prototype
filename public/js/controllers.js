@@ -132,7 +132,14 @@ angular.module("marylandTaxApp")
                     controller: 'InsideCtrlAs',
                     controllerAs: 'ctrl',
 					scope: $scope,
-                    className: 'ngdialog-theme-default custom-style'
+                    className: 'ngdialog-theme-default custom-style',
+                    preCloseCallback: function(value) {
+						// post form to REST API
+                        if (confirm('Close it?  (Value = ' + value + ')')) {
+                            return true;
+                        }
+                        return false;
+                    }
                 });
             };
 

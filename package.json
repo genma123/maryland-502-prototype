@@ -21,8 +21,9 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.13.3",
+    "bower": "latest",
     "express": "^4.13.3",
     "mongodb": "^2.0.43",
-	"bower" : "latest"
+    "mongoose": "^4.5.8"
   }
 }

@@ -3,7 +3,7 @@
 angular.module("marylandTaxApp")
 	.factory('Maryland502', ['$resource',
 	  function ($resource) {
-		return $resource('api/form/:form', {
+		return $resource('api/forms/:formId', {
 		  form: '@_id'
 		}, {
 		  update: {

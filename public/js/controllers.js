@@ -1,6 +1,6 @@
 angular.module("marylandTaxApp")
-	.controller("MarylandTaxController", ['$scope', '$routeParams', '$rootScope', 'ngDialog', 'Maryland502',
-		function($scope, $routeParams, $rootScope, ngDialog, Maryland502) {
+	.controller("MarylandTaxController", ['$scope', '$location', '$routeParams', '$rootScope', 'ngDialog', 'Maryland502',
+		function($scope, $location, $routeParams, $rootScope, ngDialog, Maryland502) {
         /* Maryland502.getMaryland502($routeParams.contactId).then(function(doc) {
             $scope.form = doc.data;
         }, function(response) {
@@ -135,10 +135,15 @@ angular.module("marylandTaxApp")
                     className: 'ngdialog-theme-default custom-style',
                     preCloseCallback: function(value) {
 						// post form to REST API
-                        if (confirm('Close it?  (Value = ' + value + ')')) {
+						  $scope.form.$save(function (response) {
+							// $location.path('form' + response._id); not appropriate in this case
+						  }, function (errorResponse) {
+							$scope.error = errorResponse.data.message;
+						  });
+                        /* if (confirm('Close it?  (Value = ' + value + ')')) {
                             return true;
-                        }
-                        return false;
+                        } */
+                        return true;
                     }
                 });
             };

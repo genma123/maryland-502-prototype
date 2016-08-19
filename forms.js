@@ -39,11 +39,34 @@ console.log("in GET by ID");
 
 router.post('/api/forms', function (req, res, next) {
 console.log("in POST");
-  var form = new Form(req.body);
-  form.save(function (err, form) {
+
+  var query = {};
+  console.log("request body: " + _.map(req.body));
+  if (req.body.formIdentifier) {
+	  query = { formId: req.body.formIdentifier };
+	  console.log("query: " + _.map(query));
+  }
+
+  Form.find(query)
+  .exec(function(err, forms) {
+	  // console.log("forms: " + _.map(forms));
     if (err) { return next(err); }
-    res.status(201).json(form);
-  })
+	if (forms.length) {
+		console.log("updating form");
+		forms[0].save(function(err,form) {
+		if (err) { return next(err); }
+			res.status(200).json(form);
+		});
+	} else {
+	  console.log("creating form");
+	  var form = new Form(req.body);
+	  form.save(function (err, form) {
+		if (err) { return next(err); }
+		res.status(201).json(form);
+	  });
+	}
+  });
+
 })
 
 Form.find()

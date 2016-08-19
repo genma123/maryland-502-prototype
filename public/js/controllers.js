@@ -70,16 +70,21 @@ angular.module("marylandTaxApp")
 		});
 
 		var formIdentifier = $cookies.get('formId');
-		console.log("formIdentifier: " + formIdentifier);
 
 		if (formIdentifier) {
+			console.log("formIdentifier: " + formIdentifier);
+			Maryland502.query({ "formIdentifier": formIdentifier}, 
+				function(response) {
+					console.log("form: " + _.map(response[0]));
+					$scope.form = response[0];
+				}
 			/*
 			$scope.form.$get({ "formIdentifier": formIdentifier},
 				function(response) {
 					// console.log("form: " + _.map(response));
 				}
-			);
 			*/
+			);
 		}
 		
 		$scope.calculate = function(form) {
@@ -149,8 +154,14 @@ angular.module("marylandTaxApp")
                     preCloseCallback: function(value) {
 						// post form to REST API
 						  $scope.form.$save(function (response) {
+							  console.log("response: " + _.map(response));
+							  console.log("filingStatus: " + _.map(response.filingStatus));
+							  console.log("subdivision: " + _.map(response.subdivision));
+							  $scope.form.filingStatus = response.filingStatus;
+							  $scope.form.subdivision = response.subdivision;
 							// $location.path('form' + response._id); not appropriate in this case
 							$cookies.put('formId', $scope.form.formId);
+							// console.log($scope.
 						  }, function (errorResponse) {
 							$scope.error = errorResponse.data.message;
 						  });

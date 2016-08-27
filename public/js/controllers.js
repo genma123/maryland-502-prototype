@@ -69,14 +69,30 @@ angular.module("marylandTaxApp")
 			formId: ""
 		});
 
+		var syncDropdowns = function($scope, response) {
+		  var sdIx = _.findIndex($scope.subdivisionChoices, function(o)
+			{
+				return o.locality == response.subdivision.locality;
+			});
+			console.log("sdIx: " + sdIx);
+		  $scope.form.subdivision = $scope.subdivisionChoices[sdIx];
+		  var fsIx = _.findIndex($scope.filingStatuses, function(o)
+			{
+				return o.status == response.filingStatus.status;
+			});
+			console.log("fsIx: " + fsIx);
+		  $scope.form.filingStatus = $scope.filingStatuses[fsIx];
+		};
+		
 		var formIdentifier = $cookies.get('formId');
 
 		if (formIdentifier) {
 			console.log("formIdentifier: " + formIdentifier);
 			Maryland502.query({ "formIdentifier": formIdentifier}, 
 				function(response) {
-					console.log("form: " + _.map(response[0]));
+					// console.log("form: " + _.map(response[0]));
 					$scope.form = response[0];
+					syncDropdowns($scope, response[0]);
 				}
 			/*
 			$scope.form.$get({ "formIdentifier": formIdentifier},
@@ -89,21 +105,21 @@ angular.module("marylandTaxApp")
 		
 		$scope.calculate = function(form) {
 			var adjustedGrossIncome = parseFloat(form.adjustedGrossIncome);
-			console.log("adjustedGrossIncome: " + adjustedGrossIncome);
+			/* console.log("adjustedGrossIncome: " + adjustedGrossIncome); */
 			
 			form.standardDeduction = calculateStandardDeduction(form);
 			
-			console.log("standard deduction: " + form.standardDeduction);
+			/* console.log("standard deduction: " + form.standardDeduction); */
 			
 			form.exemptionAmount = calculateExemption(form);
 			
-			console.log("exemption amount: " + form.exemptionAmount);
+			/* console.log("exemption amount: " + form.exemptionAmount); */
 
 			var minimumFilingIncomesUnder65 = [ 10300.0, 4000.0, 10300.0, 20600.0, 13250.0, 16600.0 ];
 
 			if (form.filingStatus.code === 2 || (!form.you65orOver && !form.spouse65orOver)) {
 				form.minimumFilingIncome = minimumFilingIncomesUnder65[form.filingStatus.code];
-				console.log("minimumFilingIncome: " + minimumFilingIncomesUnder65[form.filingStatus.code]);
+				/* console.log("minimumFilingIncome: " + minimumFilingIncomesUnder65[form.filingStatus.code]); */
 				if (adjustedGrossIncome < form.minimumFilingIncome) { // TODO base this on filing status
 					form.totalTax = 0.0;
 					return;
@@ -126,7 +142,7 @@ angular.module("marylandTaxApp")
 				} else if (filingStatus === 5 && form.you65orOver) {
 					form.minimumFilingIncome = 17850.0;
 				}
-				console.log("minimumFilingIncome: " + form.minimumFilingIncome);
+				/* console.log("minimumFilingIncome: " + form.minimumFilingIncome); */
 				if (adjustedGrossIncome < form.minimumFilingIncome) {
 					form.totalTax = 0.0;
 					return;
@@ -135,7 +151,7 @@ angular.module("marylandTaxApp")
 			
 			form.netTaxableIncome = adjustedGrossIncome - form.standardDeduction - form.exemptionAmount;
 			
-			console.log("net taxable: " + form.netTaxableIncome);
+			/* console.log("net taxable: " + form.netTaxableIncome); */
 			
 			form.totalTax = calculateMarylandTax(form);
 			
@@ -144,7 +160,7 @@ angular.module("marylandTaxApp")
 		
 		$scope.openControllerAsController = function (form) {
                 $rootScope.theme = 'ngdialog-theme-default';
-				
+				console.log("IN OPENCONTROLLERASCONTROLLER, subdivision: " + $scope.form.subdivision.locality + ", $" + $scope.form.adjustedGrossIncome);
                 ngDialog.open({
                     template: 'controllerAsDialog',
                     controller: 'InsideCtrlAs',
@@ -152,16 +168,25 @@ angular.module("marylandTaxApp")
 					scope: $scope,
                     className: 'ngdialog-theme-default custom-style',
                     preCloseCallback: function(value) {
+						console.log("IN PRECLOSECALLBACK, subdivision: " + $scope.form.subdivision.locality + ", $" + $scope.form.adjustedGrossIncome);
 						// post form to REST API
 						  $scope.form.$save(function (response) {
-							  console.log("response: " + _.map(response));
-							  console.log("filingStatus: " + _.map(response.filingStatus));
-							  console.log("subdivision: " + _.map(response.subdivision));
-							  $scope.form.filingStatus = response.filingStatus;
-							  $scope.form.subdivision = response.subdivision;
+							  // console.log("response: " + _.map(response));
+							  syncDropdowns($scope, response);
+							  /* var sdIx = _.findIndex($scope.subdivisionChoices, function(o)
+								{
+									return o.locality == response.subdivision.locality;
+								});
+								console.log("sdIx: " + sdIx);
+							  $scope.form.subdivision = $scope.subdivisionChoices[sdIx];
+							  var fsIx = _.findIndex($scope.filingStatuses, function(o)
+								{
+									return o.status == response.filingStatus.status;
+								});
+								console.log("fsIx: " + fsIx);
+							  $scope.form.filingStatus = $scope.filingStatuses[fsIx]; */
 							// $location.path('form' + response._id); not appropriate in this case
 							$cookies.put('formId', $scope.form.formId);
-							// console.log($scope.
 						  }, function (errorResponse) {
 							$scope.error = errorResponse.data.message;
 						  });
@@ -194,9 +219,9 @@ angular.module("marylandTaxApp")
         } */
     }])
 	.controller('InsideCtrlAs', ['$scope', '$rootScope', function ($scope, $rootScope) {
-		console.log("in InsideCtrlAs");
-		console.log("*** " + _.map($scope.form));
-            this.value = 'value from controller';
+		console.log("in InsideCtrlAs, subdivision: " + $scope.form.subdivision.locality);
+		// console.log("*** " + _.map($scope.form));
+            // this.value = 'value from controller';
     }]);;
 	
 	var calculateStandardDeduction = function(form) {
@@ -266,23 +291,25 @@ angular.module("marylandTaxApp")
 	};
 	
 	var calculateExemption = function(form) {
+			/*
 			console.log("you65orOver: " + form.you65orOver);
 			console.log("youBlind: " + form.youBlind);
 			console.log("spouse65orOver: " + form.spouse65orOver);
 			console.log("spouseBlind: " + form.spouseBlind);
 			console.log("numberOfDependents: " + form.numberOfDependents);
 			console.log("numberOfDependentsOver65: " + form.numberOfDependentsOver65);
+			*/
 			if (form.filingStatus.code === 2) {
 				return 0.0;
 			}
 			form.totalRegularExemptions = countExemptions(form);
 			var exemptionMultiplier = calculateExemptionMultiplier(form);
-			console.log("exemptionMultiplier: " + exemptionMultiplier);
+			/* console.log("exemptionMultiplier: " + exemptionMultiplier); */
 			var regularExemptionAmount = form.totalRegularExemptions * exemptionMultiplier;
-			console.log("regularExemptionAmount: " + regularExemptionAmount);
+			/* console.log("regularExemptionAmount: " + regularExemptionAmount); */
 			form.totalSpecialExemptions = countSpecialExemptions(form);
 			var specialExemptionAmount = 1000.0 * form.totalSpecialExemptions;
-			console.log("specialExemptionAmount: " + specialExemptionAmount);
+			/* console.log("specialExemptionAmount: " + specialExemptionAmount); */
 			return regularExemptionAmount + specialExemptionAmount;
 	};
 	
@@ -345,16 +372,16 @@ angular.module("marylandTaxApp")
 		for (var i=0; i<brackets.length; i++) {
 			var bracket = brackets[i];
 			if (form.adjustedGrossIncome > bracket.bottom && form.adjustedGrossIncome <= bracket.top) {
-				console.log("bracket.bottom: " + bracket.bottom + ", bracket.top: " + bracket.top);
+				/* console.log("bracket.bottom: " + bracket.bottom + ", bracket.top: " + bracket.top); */
 				form.marylandTax = bracket.offset + (form.netTaxableIncome - bracket.bottom) * bracket.rate * 0.01;
-				console.log("stateTax: " + form.marylandTax);
+				/* console.log("stateTax: " + form.marylandTax); */
 				form.bracketRate = bracket.rate;
 				break;
 			}
 		}
 		
 		form.localTax = form.netTaxableIncome * form.subdivision.rate;
-		console.log("localTax: " + form.localTax);
+		/* console.log("localTax: " + form.localTax); */
 		
 		return form.marylandTax + form.localTax;
 	};

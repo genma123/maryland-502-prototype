@@ -52,16 +52,25 @@ console.log("in POST");
 	  // console.log("forms: " + _.map(forms));
     if (err) { return next(err); }
 	if (forms.length) {
-		console.log("updating form");
-		forms[0].save(function(err,form) {
-		if (err) { return next(err); }
-			res.status(200).json(form);
-		});
+		console.log("updating form NOW:\n");
+			console.log(req.body);
+			// _.extend(profile , req.body);
+		// forms[0].save(function(err,form) {
+		Form.findByIdAndUpdate(forms[0]._id,
+				req.body,
+				{ upsert: true, new: true },
+				function(err,form) {
+					if (err) { return next(err); }
+					console.log(form);
+					res.status(200).json(form);
+				}
+		);
 	} else {
 	  console.log("creating form");
 	  var form = new Form(req.body);
 	  form.save(function (err, form) {
 		if (err) { return next(err); }
+		console.log(form);
 		res.status(201).json(form);
 	  });
 	}

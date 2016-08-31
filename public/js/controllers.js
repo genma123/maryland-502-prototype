@@ -173,18 +173,6 @@ angular.module("marylandTaxApp")
 						  $scope.form.$save(function (response) {
 							  // console.log("response: " + _.map(response));
 							  syncDropdowns($scope, response);
-							  /* var sdIx = _.findIndex($scope.subdivisionChoices, function(o)
-								{
-									return o.locality == response.subdivision.locality;
-								});
-								console.log("sdIx: " + sdIx);
-							  $scope.form.subdivision = $scope.subdivisionChoices[sdIx];
-							  var fsIx = _.findIndex($scope.filingStatuses, function(o)
-								{
-									return o.status == response.filingStatus.status;
-								});
-								console.log("fsIx: " + fsIx);
-							  $scope.form.filingStatus = $scope.filingStatuses[fsIx]; */
 							// $location.path('form' + response._id); not appropriate in this case
 							$cookies.put('formId', $scope.form.formId);
 						  }, function (errorResponse) {
@@ -195,6 +183,28 @@ angular.module("marylandTaxApp")
                         } */
                         return true;
                     }
+                });
+            };
+		
+		$scope.openControllerAsController2 = function (form) {
+                $rootScope.theme = 'ngdialog-theme-default';
+				console.log("IN OPENCONTROLLERASCONTROLLER2");
+                ngDialog.open({
+                    template: 'controllerAsDialog2',
+                    controller: 'InsideCtrlAs2',
+                    controllerAs: 'ctrl',
+					scope: $scope,
+                    className: 'ngdialog-theme-default custom-style',
+                    preCloseCallback: function(value) {
+						console.log("IN PRECLOSECALLBACK2");
+						Maryland502.query({ "formIdentifier": formIdentifier}, 
+							function(response) {
+								// console.log("form: " + _.map(response[0]));
+								$scope.form = response[0];
+								syncDropdowns($scope, response[0]);
+							}
+						);
+					}
                 });
             };
 		
@@ -222,6 +232,9 @@ angular.module("marylandTaxApp")
 		console.log("in InsideCtrlAs, subdivision: " + $scope.form.subdivision.locality);
 		// console.log("*** " + _.map($scope.form));
             // this.value = 'value from controller';
+    }])
+	.controller('InsideCtrlAs2', ['$scope', '$rootScope', function ($scope, $rootScope) {
+		console.log("in InsideCtrlAs2");
     }]);;
 	
 	var calculateStandardDeduction = function(form) {

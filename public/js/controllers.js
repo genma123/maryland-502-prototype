@@ -201,7 +201,7 @@ angular.module("marylandTaxApp")
 						console.log("IN PRECLOSECALLBACK2, formId: " + $scope.form.formId);
 						Maryland502.query({ "formIdentifier": $scope.form.formId},
 							function(response) {
-								// console.log("form: " + _.map(response[0]));
+								console.log("form: " + _.map(response[0]));
 								$scope.form = response[0];
 								syncDropdowns($scope, response[0]);
 							}

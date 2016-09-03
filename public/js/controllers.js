@@ -101,6 +101,8 @@ angular.module("marylandTaxApp")
 				}
 			*/
 			);
+		} else {
+			console.log("cookie not found");
 		}
 		
 		$scope.calculate = function(form) {
@@ -196,8 +198,8 @@ angular.module("marylandTaxApp")
 					scope: $scope,
                     className: 'ngdialog-theme-default custom-style',
                     preCloseCallback: function(value) {
-						console.log("IN PRECLOSECALLBACK2");
-						Maryland502.query({ "formIdentifier": formIdentifier}, 
+						console.log("IN PRECLOSECALLBACK2, formId: " + $scope.form.formId);
+						Maryland502.query({ "formIdentifier": $scope.form.formId},
 							function(response) {
 								// console.log("form: " + _.map(response[0]));
 								$scope.form = response[0];

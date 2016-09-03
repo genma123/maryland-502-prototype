@@ -37,46 +37,64 @@ console.log("in GET by ID");
   });
 });
 
+router.delete('/api/forms/:formId', function (req, res, next) {
+	Form.remove({ _id: req.params.formId }, function(err) {
+		if (err) { return next(err); }
+		console.log(req.params.formId + " removed");
+	});
+});
+
 router.post('/api/forms', function (req, res, next) {
 console.log("in POST");
 
   var query = {};
   console.log("request body: " + _.map(req.body));
-  if (req.body.formIdentifier) {
-	  query = { formId: req.body.formIdentifier };
+  if (req.body.formId) {
+	  query = { formId: req.body.formId };
 	  console.log("query: " + _.map(query));
-  }
-
-  Form.find(query)
-  .exec(function(err, forms) {
-	  // console.log("forms: " + _.map(forms));
-    if (err) { return next(err); }
-	if (forms.length) {
-		console.log("updating form NOW:\n");
-			console.log(req.body);
-			// _.extend(profile , req.body);
-		// forms[0].save(function(err,form) {
-		Form.findByIdAndUpdate(forms[0]._id,
-				req.body,
-				{ upsert: true, new: true },
-				function(err,form) {
-					if (err) { return next(err); }
-					console.log(form);
-					res.status(200).json(form);
-				}
-		);
-	} else {
-	  console.log("creating form");
-	  var form = new Form(req.body);
-	  form.save(function (err, form) {
+	  Form.find(query)
+	  .exec(function(err, forms) {
+		  // console.log("forms: " + _.map(forms));
 		if (err) { return next(err); }
-		console.log(form);
-		res.status(201).json(form);
+		if (forms.length) {
+			console.log("updating form NOW, id: " + forms[0]._id + ":\n");
+				console.log(req.body);
+				// _.extend(profile , req.body);
+			// forms[0].save(function(err,form) {
+			Form.findByIdAndUpdate(forms[0]._id,
+					req.body,
+					{ upsert: true, new: true },
+					function(err,form) {
+						if (err) { return next(err); }
+						console.log(form);
+						res.status(200).json(form);
+					}
+			);
+		} else {
+		  console.log("creating form 2");
+		  delete req.body._id;
+		  delete req.body.__v;
+		  var form = new Form(req.body);
+		  form.save(function (err, form) {
+			if (err) { return next(err); }
+			console.log(form);
+			res.status(201).json(form);
+		  });
+		}
 	  });
+	} else {
+		console.log("creating form 1");
+		delete req.body._id;
+		delete req.body.__v;
+		var form = new Form(req.body);
+		form.save(function (err, form) {
+			if (err) { return next(err); }
+			console.log(form);
+			res.status(201).json(form);
+		});
 	}
-  });
 
-})
+});
 
 Form.find()
   .exec(function(err, forms) {

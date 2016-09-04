@@ -1,6 +1,6 @@
 angular.module("marylandTaxApp")
-	.controller("MarylandTaxController", ['$scope', '$cookies', '$location', '$routeParams', '$rootScope', 'ngDialog', 'Maryland502',
-		function($scope, $cookies, $location, $routeParams, $rootScope, ngDialog, Maryland502) {
+	.controller("MarylandTaxController", ['$scope', '$cookies', '$location', '$routeParams', '$rootScope', '$window', 'ngDialog', 'Maryland502',
+		function($scope, $cookies, $location, $routeParams, $rootScope, $window, ngDialog, Maryland502) {
         /* Maryland502.getMaryland502($routeParams.contactId).then(function(doc) {
             $scope.form = doc.data;
         }, function(response) {
@@ -90,9 +90,13 @@ angular.module("marylandTaxApp")
 			console.log("formIdentifier: " + formIdentifier);
 			Maryland502.query({ "formIdentifier": formIdentifier}, 
 				function(response) {
-					// console.log("form: " + _.map(response[0]));
-					$scope.form = response[0];
-					syncDropdowns($scope, response[0]);
+					if (response.length) {
+						// console.log("form: " + _.map(response[0]));
+						$scope.form = response[0];
+						syncDropdowns($scope, response[0]);
+					}
+				}, function (errorResponse) {
+					console.log("form " + $scope.form.formId + " not found");
 				}
 			/*
 			$scope.form.$get({ "formIdentifier": formIdentifier},
@@ -176,7 +180,9 @@ angular.module("marylandTaxApp")
 							  // console.log("response: " + _.map(response));
 							  syncDropdowns($scope, response);
 							// $location.path('form' + response._id); not appropriate in this case
-							$cookies.put('formId', $scope.form.formId);
+							var now = new $window.Date(),
+								exp = new $window.Date(now.getFullYear() + 1, now.getMonth(), now.getDate());
+							$cookies.put('formId', $scope.form.formId, { expires: exp });
 						  }, function (errorResponse) {
 							$scope.error = errorResponse.data.message;
 						  });
@@ -201,9 +207,13 @@ angular.module("marylandTaxApp")
 						console.log("IN PRECLOSECALLBACK2, formId: " + $scope.form.formId);
 						Maryland502.query({ "formIdentifier": $scope.form.formId},
 							function(response) {
-								console.log("this is the form: " + _.map(response[0]));
-								_.assign($scope.form,response[0]);
-								syncDropdowns($scope, response[0]);
+								if (response.length) {
+									console.log("this is the form: " + _.map(response[0]));
+									_.assign($scope.form,response[0]);
+									syncDropdowns($scope, response[0]);
+								}
+							}, function (errorResponse) {
+								console.log("form " + $scope.form.formId + " not found");
 							}
 						);
 					}

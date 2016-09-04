@@ -20,4 +20,6 @@ angular.module("marylandTaxApp", ['ngRoute', 'ngResource', 'ngCookies', 'currenc
                     console.log('default pre-close callback');
                 }
             });
-        }]);
+    }]).config(['$cookiesProvider', function ($cookiesProvider) {
+			$cookiesProvider.defaults.path = '/'; 
+	}]);

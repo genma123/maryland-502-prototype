@@ -9,11 +9,36 @@
 		<div class="panel panel-default">
 		  <div class="panel-heading">
 			<h4 class="panel-title">
-			  <a data-toggle="collapse" data-target="#collapse1">Directions</a>
+			  <a data-toggle="collapse" data-target="#collapse1">Instructions</a>
 			</h4>
 		  </div>
 		  <div id="collapse1" class="panel-collapse collapse">
-			<div class="panel-body">These are the directions. How do you like them?</div>
+			<div class="panel-body">This is a State Tax Calculator for Maryland Residents who would normally
+					use the 1040EZ form to file their Federal Income Tax.
+					If you have a lot of itemized deductions, investment income, foreign tax credits, etc. then
+					you will probably not be able to use this. Though for everybody else, this should come in handy.<br/><br/>
+					You might want to use <a style="color: black" href="https://www.dinkytown.net/java/TaxEZ1040.html">this</a> to
+					calculate your Federal Income Taxes first.<br/></br>
+					I make no guarantee regarding correctness of these calculations. I am considering asking an
+					actual CPA to test it. An arguably "safe" way to use this, is to try to calculate your tax return
+					on your own, then compare to what this tells you. If you get a different result, try to determine
+					why — don't assume that you did it wrong.<br/><br/>
+					In fact what inspired me to write this is that I did my son's income taxes and forgot about the
+					fact that the minimum filing income is $10,300.00, even for a dependent taxpayer.<br/><br/>
+					To use, enter your Adjusted Gross Income from the 1040EZ, then select anything else that might
+					apply e.g. dependents, exemptions, etc.<br/><br/>
+					If you want to save your work, click the Save button and enter a Form ID which is any sequence of
+					characters that you don't think anybody else would use. If somebody else uses the same Form ID,
+					your form would get overwritten. You might want to consider using an e-mail address, although I
+					make no claim regarding privacy, I can't imagine myself using the information to take advantage
+					of you. At some point, I might want to send an e-mail (which would probably wind up in your spam
+					bucket anyway). If you Save, then your saved inputs will be magically restored the next time you
+					visit this site.<br/><br/>
+					If you remember your Form ID, you can retrieve your work on a different computer/mobile device/browser
+					by using the "Retrieve Prior Session" link at the bottom (below the Save button). You can also Save
+					and Retrieve multiple forms using different Form IDs.<br/><br/>
+					Happy Taxes!
+					</div>
 			<div class="panel-footer">Copyright 2016 John Emmerling</div>
 		  </div>
 		</div>
@@ -51,21 +76,6 @@
 	  </div>
 	  </label>
 	</div>
-	<!-- <div class="form-group">
-	  <label class="col-sm-4 control-label">Dependents:</label>
-	  <div class="col-sm-6">
-		<label class="radio-inline">
-		  <input type="radio" ng-model="form.numberOfDependents" name="numberOfDependents" id="numberOfDependents1" value="0"> No dependents
-		</label>
-		<label class="radio-inline">
-		  <input type="radio" ng-model="form.numberOfDependents" name="numberOfDependents" id="numberOfDependents2" value="1"> One dependent
-		</label>
-		<label class="radio-inline">
-		  <input type="radio" ng-model="form.numberOfDependents" name="numberOfDependents" id="numberOfDependents3" value="2"> Two dependents
-		</label>
-	  </div>
-	  </label>
-	</div> -->
     <div ng-hide="form.filingStatus.code == 2" class="form-group">
 	  <label class="col-sm-4 control-label">Dependents:</label>
 	  <div class="col-sm-2">
@@ -145,15 +155,6 @@
 	  </div>
 	</div>
 	</form>
-  <!-- <table class="table table-hover">
-    <tbody>
-      <tr ng-repeat="contact in contacts | orderBy:'lastName'" style="cursor:pointer">
-        <td>
-          <a ng-href="#/contact/{{contact._id}}">{{ contact.firstName }} {{ contact.lastName }}</a>
-        </td>
-      </tr>
-    </tbody>
-  </table> -->
       <script type="text/ng-template" id="controllerAsDialog">
 		<form class="form-horizontal">
 			<p>Any random sequence of letters, numbers, etc.:</p>
@@ -169,9 +170,6 @@
 				<input class="btn btn-default" type="button" value="Submit" ng-click="ctrl.saveForm(form)" id="submit"/>
 			  </div>
 			</div>
-			<!-- <div class="ngdialog-buttons">
-				<button type="button" class="ngdialog-button ngdialog-button-primary" ng-click="closeThisDialog()">Submit</button>
-			</div> -->
 		</form>
     </script>
       <script type="text/ng-template" id="controllerAsDialog2">
@@ -189,9 +187,6 @@
 				<input class="btn btn-default" type="button" value="Retrieve" ng-click="ctrl.retrieveForm(form)" id="retrieve"/>
 			  </div>
 			</div>
-			<!-- <div class="ngdialog-buttons">
-				<button type="button" class="ngdialog-button ngdialog-button-primary" ng-click="closeThisDialog()">Submit</button>
-			</div> -->
 		</form>
     </script>
 </div>

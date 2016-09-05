@@ -1,11 +1,6 @@
 angular.module("marylandTaxApp")
-	.controller("MarylandTaxController", ['$scope', '$cookies', '$location', '$routeParams', '$rootScope', '$window', 'ngDialog', 'Maryland502',
-		function($scope, $cookies, $location, $routeParams, $rootScope, $window, ngDialog, Maryland502) {
-        /* Maryland502.getMaryland502($routeParams.contactId).then(function(doc) {
-            $scope.form = doc.data;
-        }, function(response) {
-            alert(response); NO BACK END FOR NOW */
-        /* }); */
+	.controller("MarylandTaxController", ['$scope', '$cookies', '$location', '$routeParams', '$rootScope', 'ngDialog', 'Maryland502',
+		function($scope, $cookies, $location, $routeParams, $rootScope, ngDialog, Maryland502) {
 		
 		$scope.subdivisionChoices = [{locality: "Baltimore City", rate: 0.0320},
 									{locality: "Allegany County", rate: 0.0305},
@@ -69,7 +64,7 @@ angular.module("marylandTaxApp")
 			formId: ""
 		});
 
-		var syncDropdowns = function($scope, response) {
+		$scope.syncDropdowns = function($scope, response) {
 		  var sdIx = _.findIndex($scope.subdivisionChoices, function(o)
 			{
 				return o.locality == response.subdivision.locality;
@@ -93,17 +88,11 @@ angular.module("marylandTaxApp")
 					if (response.length) {
 						// console.log("form: " + _.map(response[0]));
 						$scope.form = response[0];
-						syncDropdowns($scope, response[0]);
+						$scope.syncDropdowns($scope, response[0]);
 					}
 				}, function (errorResponse) {
 					console.log("form " + $scope.form.formId + " not found");
 				}
-			/*
-			$scope.form.$get({ "formIdentifier": formIdentifier},
-				function(response) {
-					// console.log("form: " + _.map(response));
-				}
-			*/
 			);
 		} else {
 			console.log("cookie not found");
@@ -175,20 +164,6 @@ angular.module("marylandTaxApp")
                     className: 'ngdialog-theme-default custom-style',
                     preCloseCallback: function(value) {
 						console.log("IN PRECLOSECALLBACK, subdivision: " + $scope.form.subdivision.locality + ", $" + $scope.form.adjustedGrossIncome);
-						// post form to REST API
-						  $scope.form.$save(function (response) {
-							  // console.log("response: " + _.map(response));
-							  syncDropdowns($scope, response);
-							// $location.path('form' + response._id); not appropriate in this case
-							var now = new $window.Date(),
-								exp = new $window.Date(now.getFullYear() + 1, now.getMonth(), now.getDate());
-							$cookies.put('formId', $scope.form.formId, { expires: exp });
-						  }, function (errorResponse) {
-							$scope.error = errorResponse.data.message;
-						  });
-                        /* if (confirm('Close it?  (Value = ' + value + ')')) {
-                            return true;
-                        } */
                         return true;
                     }
                 });
@@ -205,48 +180,54 @@ angular.module("marylandTaxApp")
                     className: 'ngdialog-theme-default custom-style',
                     preCloseCallback: function(value) {
 						console.log("IN PRECLOSECALLBACK2, formId: " + $scope.form.formId);
-						Maryland502.query({ "formIdentifier": $scope.form.formId},
-							function(response) {
-								if (response.length) {
-									console.log("this is the form: " + _.map(response[0]));
-									_.assign($scope.form,response[0]);
-									syncDropdowns($scope, response[0]);
-								}
-							}, function (errorResponse) {
-								console.log("form " + $scope.form.formId + " not found");
-							}
-						);
+                        return true;
 					}
                 });
             };
 		
-        /* $scope.toggleEdit = function() {
-            $scope.editMode = true;
-            $scope.contactFormUrl = "contact-form.html";
-        }
-
-        $scope.back = function() {
-            $scope.editMode = false;
-            $scope.contactFormUrl = "";
-        }
-
-        $scope.saveContact = function(contact) {
-            Contacts.editContact(contact);
-            $scope.editMode = false;
-            $scope.contactFormUrl = "";
-        }
-
-        $scope.deleteContact = function(contactId) {
-            Contacts.deleteContact(contactId);
-        } */
     }])
-	.controller('InsideCtrlAs', ['$scope', '$rootScope', function ($scope, $rootScope) {
+	.controller('InsideCtrlAs', ['$scope', '$rootScope', '$cookies', '$window',
+						function ($scope, $rootScope, $cookies, $window) {
 		console.log("in InsideCtrlAs, subdivision: " + $scope.form.subdivision.locality);
-		// console.log("*** " + _.map($scope.form));
-            // this.value = 'value from controller';
+		var ctrl = this;
+			
+		ctrl.saveForm = function (form) {
+			// post form to REST API
+				$scope.form.$save(function (response) {
+				  // console.log("response: " + _.map(response));
+				$scope.syncDropdowns($scope, response);
+					// $location.path('form' + response._id); not appropriate in this case
+				var now = new $window.Date(),
+					exp = new $window.Date(now.getFullYear() + 1, now.getMonth(), now.getDate());
+				$cookies.put('formId', $scope.form.formId, { expires: exp });
+				$scope.closeThisDialog();
+			  }, function (errorResponse) {
+				$scope.error = errorResponse.data.message;
+				$scope.closeThisDialog();
+			  });
+		}
     }])
-	.controller('InsideCtrlAs2', ['$scope', '$rootScope', function ($scope, $rootScope) {
+	.controller('InsideCtrlAs2', ['$scope', '$rootScope', 'Maryland502', function ($scope, $rootScope, Maryland502) {
 		console.log("in InsideCtrlAs2");
+		var ctrl = this;
+			
+		ctrl.retrieveForm = function (form) {
+			console.log("in retrieveForm");
+			Maryland502.query({ "formIdentifier": $scope.form.formId},
+				function(response) {
+					if (response.length) {
+						console.log("this is the form: " + _.map(response[0]));
+						_.assign($scope.form,response[0]);
+						$scope.syncDropdowns($scope, response[0]);
+						$scope.closeThisDialog();
+					}
+				}, function (errorResponse) {
+					console.log("form " + $scope.form.formId + " not found");
+					$scope.closeThisDialog();
+				}
+			);
+		};
+		
     }]);;
 	
 	var calculateStandardDeduction = function(form) {

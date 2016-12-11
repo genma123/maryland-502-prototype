@@ -61,7 +61,8 @@ angular.module("marylandTaxApp")
 			bracketRate: 0.0,
 			marylandTax: 0.0,
 			localTax: 0.0,
-			formId: ""
+			formId: "",
+			formIdCS: ""
 		});
 
 		$scope.syncDropdowns = function($scope, response) {
@@ -83,10 +84,11 @@ angular.module("marylandTaxApp")
 
 		if (formIdentifier) {
 			console.log("formIdentifier: " + formIdentifier);
-			Maryland502.query({ "formIdentifier": formIdentifier}, 
+			Maryland502.query({ "formIdentifier": formIdentifier.toLowerCase()}, 
 				function(response) {
 					if (response.length) {
 						// console.log("form: " + _.map(response[0]));
+						response[0].formId = response[0].formIdCS;
 						$scope.form = response[0];
 						$scope.syncDropdowns($scope, response[0]);
 					}
@@ -193,7 +195,11 @@ angular.module("marylandTaxApp")
 			
 		ctrl.saveForm = function (form) {
 			// post form to REST API
+				// make lower case at the last minute for case-insentive retrieval
+				form.formIdCS = form.formId;
+				form.formId = form.formId.toLowerCase();
 				$scope.form.$save(function (response) {
+				$scope.form.formId = $scope.form.formIdCS; // restore case sensitive
 				  // console.log("response: " + _.map(response));
 				$scope.syncDropdowns($scope, response);
 					// $location.path('form' + response._id); not appropriate in this case
@@ -213,10 +219,11 @@ angular.module("marylandTaxApp")
 			
 		ctrl.retrieveForm = function (form) {
 			console.log("in retrieveForm");
-			Maryland502.query({ "formIdentifier": $scope.form.formId},
+			Maryland502.query({ "formIdentifier": $scope.form.formId.toLowerCase()}, // case-insensitive search
 				function(response) {
 					if (response.length) {
 						console.log("this is the form: " + _.map(response[0]));
+						response[0].formId = response[0].formIdCS; // restore case sensitive
 						_.assign($scope.form,response[0]);
 						$scope.syncDropdowns($scope, response[0]);
 						$scope.closeThisDialog();

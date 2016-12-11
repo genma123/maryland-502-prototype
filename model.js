@@ -33,7 +33,8 @@ var Form = new Schema({
 	bracketRate: Number,
 	marylandTax: Number,
 	localTax: Number,
-	formId: String
+	formId: String,
+	formIdCS: String
 });
 
 mongoose.model('Form', Form);

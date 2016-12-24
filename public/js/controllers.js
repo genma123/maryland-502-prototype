@@ -205,7 +205,9 @@ angular.module("marylandTaxApp")
 					// $location.path('form' + response._id); not appropriate in this case
 				var now = new $window.Date(),
 					exp = new $window.Date(now.getFullYear() + 1, now.getMonth(), now.getDate());
-				$cookies.put('formId', $scope.form.formId, [{ expires: now + 365 }]);
+				now.setDate(now.getDate() + 365);
+				console.log("now: " + now);
+				$cookies.put('formId', $scope.form.formId, { expires: now });
 				$scope.closeThisDialog();
 			  }, function (errorResponse) {
 				$scope.error = errorResponse.data.message;
